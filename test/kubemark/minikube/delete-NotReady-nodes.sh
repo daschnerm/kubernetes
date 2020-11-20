@@ -1,0 +1,1 @@
+kubectl get no | grep NotReady | awk {'print $1'} | xargs kubectl delete no

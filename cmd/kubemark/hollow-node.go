@@ -67,6 +67,7 @@ type hollowNodeConfig struct {
 	ProxierMinSyncPeriod time.Duration
 	NodeLabels           map[string]string
 	RegisterWithTaints   []core.Taint
+	ProvisioningDuration int
 }
 
 const (
@@ -92,6 +93,7 @@ func (c *hollowNodeConfig) addFlags(fs *pflag.FlagSet) {
 	bindableNodeLabels := cliflag.ConfigurationMap(c.NodeLabels)
 	fs.Var(&bindableNodeLabels, "node-labels", "Additional node labels")
 	fs.Var(utiltaints.NewTaintsVar(&c.RegisterWithTaints), "register-with-taints", "Register the node with the given list of taints (comma separated \"<key>=<value>:<effect>\"). No-op if register-node is false.")
+	fs.IntVar(&c.ProvisioningDuration, "provisioning-duration", 2, "Provisioning duration in minutes")
 }
 
 func (c *hollowNodeConfig) createClientConfigFromFile() (*restclient.Config, error) {
@@ -185,6 +187,10 @@ func run(config *hollowNodeConfig) {
 	if err != nil {
 		klog.Fatalf("Failed to create a ClientSet: %v. Exiting.", err)
 	}
+
+	klog.Infof("ProvisioningDuration: %+v", config.ProvisioningDuration)
+	time.Sleep(time.Duration(config.ProvisioningDuration) * time.Minute)
+	klog.Infof("Provisioning completed")
 
 	if config.Morph == "kubelet" {
 		f, c := kubemark.GetHollowKubeletConfig(config.createHollowKubeletOptions())

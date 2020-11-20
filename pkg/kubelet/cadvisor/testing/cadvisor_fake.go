@@ -34,8 +34,8 @@ const (
 	// FakeContainerOSVersion is a fake OS version for testing.
 	FakeContainerOSVersion = "Debian GNU/Linux 7 (wheezy)"
 
-	fakeNumCores       = 1
-	fakeMemoryCapacity = 4026531840
+	fakeNumCores       = 32
+	fakeMemoryCapacity = 34359738368
 	fakeDockerVersion  = "1.13.1"
 )
 
