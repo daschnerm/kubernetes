@@ -68,6 +68,8 @@ type hollowNodeConfig struct {
 	NodeLabels           map[string]string
 	RegisterWithTaints   []core.Taint
 	ProvisioningDuration int
+	CpuCores             int
+	Memory               uint64
 }
 
 const (
@@ -94,6 +96,8 @@ func (c *hollowNodeConfig) addFlags(fs *pflag.FlagSet) {
 	fs.Var(&bindableNodeLabels, "node-labels", "Additional node labels")
 	fs.Var(utiltaints.NewTaintsVar(&c.RegisterWithTaints), "register-with-taints", "Register the node with the given list of taints (comma separated \"<key>=<value>:<effect>\"). No-op if register-node is false.")
 	fs.IntVar(&c.ProvisioningDuration, "provisioning-duration", 2, "Provisioning duration in minutes")
+	fs.IntVar(&c.CpuCores, "cpu-cores", 16, "CPU Cores of the node")
+	fs.Uint64Var(&c.Memory, "memory", 34359738368, "Node memory in Bytes")
 }
 
 func (c *hollowNodeConfig) createClientConfigFromFile() (*restclient.Config, error) {
@@ -216,7 +220,9 @@ func run(config *hollowNodeConfig) {
 		}
 
 		cadvisorInterface := &cadvisortest.Fake{
-			NodeName: config.NodeName,
+			NodeName:           config.NodeName,
+			FakeNumCores:       config.CpuCores,
+			FakeMemoryCapacity: config.Memory,
 		}
 		containerManager := cm.NewStubContainerManager()
 
