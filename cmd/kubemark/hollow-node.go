@@ -173,6 +173,10 @@ func run(config *hollowNodeConfig) {
 	// To help debugging, immediately log version
 	klog.Infof("Version: %+v", version.Get())
 
+	var ActualProvisioningDuration int
+
+	ActualProvisioningDuration = (config.ProvisioningDuration * 60) - 28
+
 	if !knownMorphs.Has(config.Morph) {
 		klog.Fatalf("Unknown morph: %v. Allowed values: %v", config.Morph, knownMorphs.List())
 	}
@@ -188,8 +192,10 @@ func run(config *hollowNodeConfig) {
 		klog.Fatalf("Failed to create a ClientSet: %v. Exiting.", err)
 	}
 
-	klog.Infof("ProvisioningDuration: %+v", config.ProvisioningDuration)
-	time.Sleep(time.Duration(config.ProvisioningDuration) * time.Minute)
+	// Sleep here
+	klog.Infof("ProvisioningDuration: %+v min, ActualProvDuration: %+v s", config.ProvisioningDuration, ActualProvisioningDuration)
+	//klog.Infof("ProvisioningDuration: %+v", config.ProvisioningDuration)
+	time.Sleep(time.Duration(ActualProvisioningDuration) * time.Second)
 	klog.Infof("Provisioning completed")
 
 	if config.Morph == "kubelet" {
